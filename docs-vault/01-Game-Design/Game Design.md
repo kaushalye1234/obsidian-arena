@@ -7,10 +7,10 @@ Two to four players enter a top-down obsidian arena for a 60-second survival mat
 1. Create or join a room.
 2. Mark all players ready.
 3. Start and move around the arena.
-4. Gain placeholder movement points.
+4. Collect obsidian crystals for 10 points each.
 5. Finish after 60 seconds and persist results.
 
-Movement scoring makes the networking slice playable. Milestone two replaces it with server-spawned crystals, collision detection, health, and expanding lava hazards.
+Eight crystals are spawned from a deterministic room seed. When a player touches a crystal, the server awards 10 points and respawns it at a new seeded location. Expanding lava hazards and health remain for the next iteration.
 
 ## Constraints
 
