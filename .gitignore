@@ -1,0 +1,7 @@
+.env
+bin/
+coverage.out
+.DS_Store
+docs-vault/.obsidian/workspace.json
+docs-vault/.obsidian/workspace-mobile.json
+docs-vault/.trash/

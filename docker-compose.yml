@@ -1,0 +1,46 @@
+services:
+  api:
+    build: .
+    environment:
+      PORT: 8080
+      DATABASE_URL: postgres://game:game@db:5432/obsidian_arena?sslmode=disable
+      ALLOWED_ORIGINS: http://localhost:5173,http://localhost:8081
+      MATCH_DURATION_SECONDS: 60
+      TICK_RATE: 20
+    ports:
+      - "8090:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: game
+      POSTGRES_PASSWORD: game
+      POSTGRES_DB: obsidian_arena
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U game -d obsidian_arena"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  migrate:
+    image: postgres:17-alpine
+    environment:
+      PGPASSWORD: game
+    volumes:
+      - ./migrations:/migrations:ro
+    command: ["sh", "-c", "psql -h db -U game -d obsidian_arena -f /migrations/001_init.sql"]
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
