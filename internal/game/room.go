@@ -56,6 +56,7 @@ func (r *Room) AddPlayer(id, name string, client Client) bool {
 	r.clients[id] = client
 	joined := *r.players[id]
 	r.broadcastLocked(Event{Type: "player_joined", Data: joined})
+	r.broadcastSnapshotLocked()
 	return true
 }
 
@@ -68,6 +69,8 @@ func (r *Room) RemovePlayer(id string) {
 		delete(r.inputs, id)
 	}
 	r.broadcastLocked(Event{Type: "player_left", Data: map[string]string{"playerId": id}})
+	delete(r.inputs, id)
+	r.broadcastSnapshotLocked()
 }
 
 func (r *Room) SetReady(id string, ready bool) {
@@ -76,6 +79,7 @@ func (r *Room) SetReady(id string, ready bool) {
 	if player := r.players[id]; player != nil {
 		player.Ready = ready
 	}
+	r.broadcastSnapshotLocked()
 }
 
 func (r *Room) ApplyInput(id string, input Input) {
@@ -149,6 +153,7 @@ func (r *Room) loop(ctx context.Context) {
 func (r *Room) step(dt float64) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
+	if r.status != "playing" { return }
 	r.tick++
 	for id, input := range r.inputs {
 		player := r.players[id]
@@ -169,7 +174,15 @@ func (r *Room) step(dt float64) {
 func (r *Room) broadcastSnapshot() {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
+	r.broadcastSnapshotLocked()
+}
+
+// Caller holds r.mu for reading or writing.
+func (r *Room) broadcastSnapshotLocked() {
 	remaining := max(r.duration-time.Since(r.startedAt), 0)
+	if r.status == "waiting" {
+		remaining = r.duration
+	}
 	r.broadcastLocked(Event{Type: "snapshot", Data: Snapshot{
 		Type:        "snapshot",
 		RoomCode:    r.Code,
@@ -184,7 +197,12 @@ func (r *Room) broadcastSnapshot() {
 
 func (r *Room) finish() {
 	r.mu.Lock()
+	if r.status == "finished" {
+		r.mu.Unlock()
+		return
+	}
 	r.status = "finished"
+	r.inputs = map[string]Input{}
 	scores := make(map[string]int, len(r.players))
 	for id, player := range r.players {
 		scores[id] = player.Score
