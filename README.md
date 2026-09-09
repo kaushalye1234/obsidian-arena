@@ -43,4 +43,12 @@ make up
 make down
 ```
 
-Next: replace placeholder movement scoring with collectibles and hazards, add authentication and reconnect tokens, then build the React and React Native clients.
+## Web client
+
+The React game is in [clients/web](clients/web/README.md). Start the backend
+with `docker compose up --build`, then run `npm install` and `npm run dev`
+from `clients/web`. Open http://localhost:5173 and use backend URL
+http://localhost:8090. Follow the client README to test a two-player room.
+
+Offline demo levels are included. Server-managed multiplayer levels,
+authentication, reconnect tokens, and a saved-progress UI remain follow-up work.
