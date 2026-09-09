@@ -7,6 +7,23 @@ export type Player = {
   ready: boolean;
 };
 
+export type Crystal = {
+  id: string;
+  x: number;
+  y: number;
+  value: number;
+};
+
+export type Snapshot = {
+  roomCode: string;
+  status: "waiting" | "playing" | "finished";
+  players: Record<string, Player>;
+  crystals: Crystal[];
+  seed: number;
+  remainingMs: number;
+  tick: number;
+};
+
 export type ServerEvent = {
   type: "connected" | "player_joined" | "player_left" | "snapshot" | "match_finished" | "error";
   data?: unknown;
