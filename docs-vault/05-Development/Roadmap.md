@@ -10,10 +10,10 @@
 
 ## Milestone 2 — Game mechanics
 
-- [ ] Server-spawned crystals
-- [ ] Collision detection
+- [x] Server-spawned crystals
+- [x] Collision detection
 - [ ] Lava hazards and health
-- [ ] Deterministic random seed
+- [x] Deterministic random seed
 
 ## Milestone 3 — Production fundamentals
 
@@ -26,5 +26,5 @@
 
 - [ ] React web client
 - [ ] React Native client
-- [ ] GitHub Actions
+- [x] GitHub Actions
 - [ ] AWS test deployment
